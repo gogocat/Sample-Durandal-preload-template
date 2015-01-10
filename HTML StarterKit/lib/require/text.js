@@ -386,5 +386,15 @@ define(['module'], function (module) {
 		$textHtml = $("[type='text/html']");
 	});
 	
+/**
+     * Function to refresh the $textHtml array
+     * Sometimes your templates are loaded in dynamically after docReady event :)
+     */
+    text.refreshTextHtml = function(){
+
+        $textHtml = $("[type='text/html']");
+
+    }
+    
     return text;
 });
