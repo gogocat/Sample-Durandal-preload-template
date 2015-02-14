@@ -26,7 +26,10 @@ define(['module'], function (module) {
         defaultPort = hasLocation && (location.port || undefined),
         buildMap = {},
         masterConfig = (module.config && module.config()) || {},
-		$textHtml = [];
+		$ = jQuery,
+		viewPathAttr = "data-view-path",
+		$tmplCache = [],
+		updateTmplCache;
 
     text = {
         version: '2.0.7',
@@ -261,7 +264,7 @@ define(['module'], function (module) {
         };
     } else if (masterConfig.env === 'xhr' || (!masterConfig.env && text.createXhr())) {
         text.get = function (url, callback, errback, headers) {
-            var dataTmp = ($textHtml.length) ? $textHtml.filter("[data-view-path='"+ url +"']").eq(0) : [],
+            var dataTmp = ($tmplCache.length) ? $tmplCache.filter('['+ viewPathAttr +'="'+ url +'"]').eq(0) : [],
 				xhr,
 				header;
 				
@@ -382,9 +385,21 @@ define(['module'], function (module) {
         };
     }
 	
+	updateTmplCache = function() {
+		$tmplCache.length = 0;
+		$tmplCache = $('script[type="text/html"]['+ viewPathAttr +']');
+	};
+	
+	// cach all template on page
 	$(document).ready(function() {
-		$textHtml = $("[type='text/html']");
+		updateTmplCache();
 	});
+	
+	/**
+	* Function to refresh the $textHtml array
+	* Sometimes your templates are loaded in dynamically after docReady event :)
+	*/
+    text.refreshTextHtml = updateTmplCache;
 	
     return text;
 });
